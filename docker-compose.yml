@@ -1,0 +1,27 @@
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: sinch_ai_bot_webhook_redis        # new container name
+    restart: unless-stopped
+    ports:
+      - "4112:6379"                                  # use a different host port if the old container is still running
+    volumes:
+      - sinch_ai_bot_webhook_redis_data:/data          # new volume name
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - webhook_network
+
+volumes:
+  sinch_ai_bot_webhook_redis_data:
+
+networks:
+  webhook_network:
+    driver: bridge

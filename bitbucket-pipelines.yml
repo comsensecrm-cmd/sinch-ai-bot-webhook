@@ -1,0 +1,12 @@
+image: atlassian/default-image:latest
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Deploy on Ubuntu Server
+          deployment: Dev
+          script:
+            - echo "Deploying to DEV..."
+            - apt-get update && apt-get install -y sshpass
+            - sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "/home/comsense/projects/sinch-ai-bot-webhook/deploy.sh"
